@@ -99,12 +99,12 @@ class Block(nn.Module):
         #        interchange here
         #           | | | | |
         #           v v v v v
-        self.ln_1 = LayerNorm(config.n_embd, bias=config.bias)
+        self.ln_1 = KDLayerNorm(config.n_embd, bias=config.bias)
         self.attn = CausalSelfAttention(config)
         #        interchange here
         #           | | | | |
         #           v v v v v
-        self.ln_2 = LayerNorm(config.n_embd, bias=config.bias)
+        self.ln_2 = KDLayerNorm(config.n_embd, bias=config.bias)
         self.mlp = MLP(config)
 
     def forward(self, x):
@@ -138,7 +138,7 @@ class GPT(nn.Module):
             #   interchange here
             #      | | | | |
             #      v v v v v
-            ln_f = LayerNorm(config.n_embd, bias=config.bias),
+            ln_f = KDLayerNorm(config.n_embd, bias=config.bias),
         ))
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
         # with weight tying when using torch.compile() some warnings get generated:
