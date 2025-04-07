@@ -15,6 +15,8 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 from KDLayerNorm import KDLayerNorm # <- our LayerNorm to test
+from KDLayerNorm import KDLayerNormSmpl
+from GMLayerNorm import GMLayerNorm
 
 class LayerNorm(nn.Module):
     """ LayerNorm but with an optional bias. PyTorch doesn't support simply bias=False """
@@ -99,12 +101,12 @@ class Block(nn.Module):
         #        interchange here
         #           | | | | |
         #           v v v v v
-        self.ln_1 = KDLayerNorm(config.n_embd, bias=config.bias)
+        self.ln_1 = GMLayerNorm(config.n_embd, bias=config.bias)
         self.attn = CausalSelfAttention(config)
         #        interchange here
         #           | | | | |
         #           v v v v v
-        self.ln_2 = KDLayerNorm(config.n_embd, bias=config.bias)
+        self.ln_2 = GMLayerNorm(config.n_embd, bias=config.bias)
         self.mlp = MLP(config)
 
     def forward(self, x):
@@ -138,7 +140,7 @@ class GPT(nn.Module):
             #   interchange here
             #      | | | | |
             #      v v v v v
-            ln_f = KDLayerNorm(config.n_embd, bias=config.bias),
+            ln_f = GMLayerNorm(config.n_embd, bias=config.bias),
         ))
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
         # with weight tying when using torch.compile() some warnings get generated:
